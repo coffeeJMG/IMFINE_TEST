@@ -37,14 +37,22 @@ th {
     border: 1px solid #000;
     padding: 10px;
     width: 250px;
+    position: relative;
 }
 
-.advanced-editor__container__text {
+.advanced-editor__text {
     padding: 0 15px; /* 상하 5px, 좌우 15px 패딩 */
     white-space: pre-line; /* 줄바꿈 및 공백 유지 */
 }
 
-p.advanced-editor__container__bracket,
-p.advanced-editor__container__text {
+p.advanced-editor__bracket,
+p.advanced-editor__text {
     margin: 0; /* 상하 마진 제거 */
+    font-size: small;
+}
+
+.advanced-editor__save-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
 }

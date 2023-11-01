@@ -71,22 +71,69 @@ function addToJsonData(id, value) {
 
 // 테이블 데이터 추가 시 고급 편집 엘리먼트 생성
 function renderAdvancedEditor() {
-    const advancedEditor = document.querySelector(
-        ".advanced-editor__container__bracket",
-    );
+    const advancedEditor = document.querySelector(".advanced-editor__bracket");
     const jsonDataDisplay = document.createElement("div"); // 데이터를 표시할 div 생성
     jsonDataDisplay.className = "jsonData-display";
 
     jsonData.forEach((data) => {
         const dataLine = document.createElement("p");
-        dataLine.className = "advanced-editor__container__text";
+        dataLine.className = "advanced-editor__text";
         dataLine.innerHTML = `{
-            &nbsp;&nbsp;&nbsp;&nbsp;"ID" : ${data.id}, 
-            &nbsp;&nbsp;&nbsp;&nbsp;"Value": ${data.value}
+            &nbsp;&nbsp;&nbsp;&nbsp;"id" : <span class="advanced-editor__editable-id">${data.id}</span>, 
+            &nbsp;&nbsp;&nbsp;&nbsp;"value": <span class="advanced-editor__editable-value">${data.value}</span>
         },`;
         jsonDataDisplay.appendChild(dataLine);
     });
 
+    // 더블 클릭 시 span을 input으로 변환하는 함수
+    function convertToInput(event, className) {
+        if (event.target.classList.contains(className)) {
+            const span = event.target;
+            const currentValue = span.textContent;
+
+            const input = document.createElement("input");
+            input.value = currentValue;
+            span.replaceWith(input);
+            input.focus();
+
+            // input 값이 변경되면 '수정하기' 버튼 표시
+            input.addEventListener("input", function () {
+                if (!document.querySelector(".advanced-editor__save-btn")) {
+                    const saveBtn = document.createElement("button");
+                    saveBtn.textContent = "수정하기";
+                    saveBtn.className = "advanced-editor__save-btn";
+                    input.after(saveBtn);
+                }
+            });
+        }
+    }
+
+    document.addEventListener("dblclick", function (event) {
+        convertToInput(event, "advanced-editor__editable-id");
+        convertToInput(event, "advanced-editor__editable-value");
+    });
+
+    // '수정하기' 버튼 클릭 시 값을 저장하고 input을 span으로 변환
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("advanced-editor__save-btn")) {
+            const btn = event.target;
+            const input = btn.previousElementSibling;
+
+            const span = document.createElement("span");
+            if (
+                input.previousElementSibling &&
+                input.previousElementSibling.textContent.includes("id")
+            ) {
+                span.className = "advanced-editor__editable-id";
+            } else {
+                span.className = "advanced-editor__editable-value";
+            }
+
+            span.textContent = input.value;
+            input.replaceWith(span);
+            btn.remove();
+        }
+    });
     // 기존에 추가된 jsonDataDisplay 삭제 (중복 방지)
     const oldDisplay = advancedEditor.querySelector(".jsonData-display");
     if (oldDisplay) {
