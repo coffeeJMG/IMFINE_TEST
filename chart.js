@@ -97,7 +97,6 @@ function Chart() {
         me.svg.append(textMiddle);
     };
     me.setData = function (data) {
-        console.log(data);
         me.svg.innerHTML = "";
         me.drawAxis();
         let dataCount = data.length;
@@ -109,14 +108,6 @@ function Chart() {
         let barWidthArea = chartAreaWidth / dataCount;
         let barWidth = (chartAreaWidth / dataCount) * 0.8; // 여백
         let barGapX = (chartAreaWidth / dataCount) * 0.1;
-        console.log(dataCount, chartAreaWidth, chartAreaHeight);
-        console.log(
-            chartAreaTop,
-            chartAreaBottom,
-            chartAreaLeft,
-            barWidth,
-            barGapX,
-        );
 
         for (let i = 0; i < dataCount; i++) {
             let item = data[i];

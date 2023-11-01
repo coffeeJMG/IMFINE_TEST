@@ -1,3 +1,7 @@
+// table과 고급 편집 텍스트 관리 js 파일
+
+let jsonData = [];
+
 function editTable() {
     const tableBody = document.getElementById("tableBody");
 
@@ -36,20 +40,6 @@ function editTable() {
     deleteBtn.type = "text";
     deleteBtn.innerHTML = "삭제";
 
-    deleteBtn.addEventListener("click", function () {
-        // 해당 행을 삭제
-        tableBody.removeChild(row);
-
-        // jsonData 배열에서 해당 항목 제거
-        const updateData = jsonData.findIndex((data) => data.id === idValue);
-        if (updateData > -1) {
-            jsonData.splice(updateData, 1);
-        }
-        chartInstance.setChartData(jsonData);
-        // 필요에 따라 추가적인 렌더링 함수나 로직 호출
-        renderAdvancedEditor();
-    });
-
     deleteCell.appendChild(deleteBtn);
 
     row.appendChild(idCell);
@@ -59,9 +49,16 @@ function editTable() {
     tableBody.appendChild(row);
 
     renderAdvancedEditor();
-}
+    deleteBtn.addEventListener("click", function () {
+        handleDeleteClick(row, idValue, chartInstance);
+    });
 
-let jsonData = [];
+    document
+        .querySelector(".edit-data__apply-btn")
+        .addEventListener("click", function () {
+            handleApplyClick(chartInstance);
+        });
+}
 
 function addToJsonData(id, value) {
     let newEntry = {
@@ -89,4 +86,49 @@ function renderAdvancedEditor() {
     }
 
     advancedEditor.appendChild(jsonDataDisplay);
+}
+function editTableValues() {
+    const tableBody = document.getElementById("tableBody");
+    const rows = tableBody.querySelectorAll("tr");
+    let updatedValues = [];
+
+    rows.forEach((row) => {
+        const valueInput = row.querySelector("td:nth-child(2) input");
+        const id = row.querySelector("td:nth-child(1) div").innerText;
+
+        let updatedValue = updateJsonData(id, valueInput.value); // 이렇게 바뀐 값을 업데이트하고 결과를 받아옴
+        if (updatedValue) {
+            updatedValues.push(updatedValue); // 변경된 값을 배열에 추가
+        }
+    });
+
+    renderAdvancedEditor(); // 변경된 jsonData로 고급 편집기 업데이트
+    return updatedValues; // 수정된 값을 반환
+}
+
+function updateJsonData(id, value) {
+    let existingEntry = jsonData.find((data) => data.id === id);
+    if (existingEntry) {
+        existingEntry.value = value; // 해당 id의 value 값을 업데이트
+        return { id: id, value: value };
+    }
+}
+
+// 삭제 버튼 이벤트 리스너
+function handleDeleteClick(row, idValue, chartInstance) {
+    tableBody.removeChild(row);
+
+    const updateData = jsonData.findIndex((data) => data.id === idValue);
+    if (updateData > -1) {
+        jsonData.splice(updateData, 1);
+    }
+    chartInstance.setChartData(jsonData);
+    renderAdvancedEditor();
+}
+
+// 데이터 수정 버튼 이벤트 리스너
+function handleApplyClick(chartInstance) {
+    const updatedValues = editTableValues();
+    chartInstance.setChartData(updatedValues);
+    console.log(updatedValues);
 }
