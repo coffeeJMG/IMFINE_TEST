@@ -1,6 +1,6 @@
 // table과 고급 편집 텍스트 관리 js 파일
 
-let jsonData = [];
+let jsonDataList = [];
 
 function editTable() {
     const tableBody = document.getElementById("tableBody");
@@ -10,7 +10,7 @@ function editTable() {
 
     addToJsonData(idValue, scoreValue);
     const chartInstance = chartFactory();
-    chartInstance.setChartData(jsonData);
+    chartInstance.setChartData(jsonDataList);
     const row = document.createElement("tr");
 
     // 현재 행의 개수를 기반으로 배경색 설정
@@ -66,23 +66,23 @@ function addToJsonData(id, value) {
         id: id,
         value: value,
     };
-    jsonData.push(newEntry);
+    jsonDataList.push(newEntry);
 }
 
 // 테이블 데이터 추가 시 고급 편집 엘리먼트 생성
 function renderAdvancedEditor() {
     const advancedEditor = document.querySelector(".advanced-editor__bracket");
-    const jsonDataDisplay = document.createElement("div"); // 데이터를 표시할 div 생성
-    jsonDataDisplay.className = "jsonData-display";
+    const jsonDataBox = document.createElement("div"); // 데이터를 표시할 div 생성
+    jsonDataBox.className = "advanced-editor__content";
 
-    jsonData.forEach((data) => {
-        const dataLine = document.createElement("p");
-        dataLine.className = "advanced-editor__text";
-        dataLine.innerHTML = `{
+    jsonDataList.forEach((data) => {
+        const jsonData = document.createElement("p");
+        jsonData.className = "advanced-editor__text";
+        jsonData.innerHTML = `{
             &nbsp;&nbsp;&nbsp;&nbsp;"id" : <span class="advanced-editor__editable-id">${data.id}</span>, 
             &nbsp;&nbsp;&nbsp;&nbsp;"value": <span class="advanced-editor__editable-value">${data.value}</span>
         },`;
-        jsonDataDisplay.appendChild(dataLine);
+        jsonDataBox.appendChild(jsonData);
     });
 
     // 더블 클릭 시 span을 input으로 변환하는 함수
@@ -102,7 +102,9 @@ function renderAdvancedEditor() {
                     const saveBtn = document.createElement("button");
                     saveBtn.textContent = "수정하기";
                     saveBtn.className = "advanced-editor__save-btn";
-                    input.after(saveBtn);
+                    document
+                        .querySelector(".advanced-editor__content")
+                        .after(saveBtn);
                 }
             });
         }
@@ -116,31 +118,42 @@ function renderAdvancedEditor() {
     // '수정하기' 버튼 클릭 시 값을 저장하고 input을 span으로 변환
     document.addEventListener("click", function (event) {
         if (event.target.classList.contains("advanced-editor__save-btn")) {
-            const btn = event.target;
-            const input = btn.previousElementSibling;
+            // .advanced-editor__content 내의 모든 input 요소들을 찾습니다.
+            const inputs = document.querySelectorAll(
+                ".advanced-editor__content input",
+            );
 
-            const span = document.createElement("span");
-            if (
-                input.previousElementSibling &&
-                input.previousElementSibling.textContent.includes("id")
-            ) {
-                span.className = "advanced-editor__editable-id";
-            } else {
-                span.className = "advanced-editor__editable-value";
-            }
+            inputs.forEach((input) => {
+                const span = document.createElement("span");
 
-            span.textContent = input.value;
-            input.replaceWith(span);
-            btn.remove();
+                // input의 이전 형제 요소가 "id"를 포함하고 있는지 확인
+                if (
+                    input.previousElementSibling &&
+                    input.previousElementSibling.textContent.includes("id")
+                ) {
+                    span.className = "advanced-editor__editable-id";
+                } else {
+                    span.className = "advanced-editor__editable-value";
+                }
+
+                span.textContent = input.value;
+                input.replaceWith(span);
+            });
+
+            // 수정하기 버튼 제거
+            event.target.remove();
         }
     });
-    // 기존에 추가된 jsonDataDisplay 삭제 (중복 방지)
-    const oldDisplay = advancedEditor.querySelector(".jsonData-display");
+
+    // 기존에 추가된 jsonDataBox 삭제 (중복 방지)
+    const oldDisplay = advancedEditor.querySelector(
+        ".advanced-editor__content",
+    );
     if (oldDisplay) {
         advancedEditor.removeChild(oldDisplay);
     }
 
-    advancedEditor.appendChild(jsonDataDisplay);
+    advancedEditor.appendChild(jsonDataBox);
 }
 
 // 테이블 데이터 수정
@@ -165,7 +178,7 @@ function editTableValues() {
 
 // JSON Data 업데이트
 function updateJsonData(id, value) {
-    let existingEntry = jsonData.find((data) => data.id === id);
+    let existingEntry = jsonDataList.find((data) => data.id === id);
     if (existingEntry) {
         existingEntry.value = value; // 해당 id의 value 값을 업데이트
         return { id: id, value: value };
@@ -180,7 +193,7 @@ function handleDeleteClick(row, idValue, chartInstance) {
     if (updateData > -1) {
         jsonData.splice(updateData, 1);
     }
-    chartInstance.setChartData(jsonData);
+    chartInstance.setChartData(jsonDataList);
     renderAdvancedEditor();
 }
 

@@ -12,7 +12,7 @@ function chartFactory() {
 
 let init = function () {
     const chartInstance = chartFactory();
-    chartInstance.setChartData(jsonData);
+    chartInstance.setChartData(jsonDataList);
 };
 
 document.addEventListener("DOMContentLoaded", function () {
