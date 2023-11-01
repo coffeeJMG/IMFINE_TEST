@@ -32,3 +32,19 @@ th {
 #tableBody tr:nth-child(even) {
     background-color: #e6e6e6; /* 원하는 색상으로 변경 */
 }
+
+.advanced-editor__container {
+    border: 1px solid #000;
+    padding: 10px;
+    width: 250px;
+}
+
+.advanced-editor__container__text {
+    padding: 0 15px; /* 상하 5px, 좌우 15px 패딩 */
+    white-space: pre-line; /* 줄바꿈 및 공백 유지 */
+}
+
+p.advanced-editor__container__bracket,
+p.advanced-editor__container__text {
+    margin: 0; /* 상하 마진 제거 */
+}

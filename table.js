@@ -60,6 +60,7 @@ function editTable() {
         });
 }
 
+// 테이블 데이터 추가 함수
 function addToJsonData(id, value) {
     let newEntry = {
         id: id,
@@ -68,14 +69,21 @@ function addToJsonData(id, value) {
     jsonData.push(newEntry);
 }
 
+// 테이블 데이터 추가 시 고급 편집 엘리먼트 생성
 function renderAdvancedEditor() {
-    const advancedEditor = document.querySelector(".advanced-editor");
+    const advancedEditor = document.querySelector(
+        ".advanced-editor__container__bracket",
+    );
     const jsonDataDisplay = document.createElement("div"); // 데이터를 표시할 div 생성
     jsonDataDisplay.className = "jsonData-display";
 
     jsonData.forEach((data) => {
-        const dataLine = document.createElement("p"); // 각 데이터 아이템을 위한 p 엘리먼트
-        dataLine.innerText = `ID: ${data.id}, Value: ${data.value}`;
+        const dataLine = document.createElement("p");
+        dataLine.className = "advanced-editor__container__text";
+        dataLine.innerHTML = `{
+            &nbsp;&nbsp;&nbsp;&nbsp;"ID" : ${data.id}, 
+            &nbsp;&nbsp;&nbsp;&nbsp;"Value": ${data.value}
+        },`;
         jsonDataDisplay.appendChild(dataLine);
     });
 
@@ -87,6 +95,8 @@ function renderAdvancedEditor() {
 
     advancedEditor.appendChild(jsonDataDisplay);
 }
+
+// 테이블 데이터 수정
 function editTableValues() {
     const tableBody = document.getElementById("tableBody");
     const rows = tableBody.querySelectorAll("tr");
@@ -106,6 +116,7 @@ function editTableValues() {
     return updatedValues; // 수정된 값을 반환
 }
 
+// JSON Data 업데이트
 function updateJsonData(id, value) {
     let existingEntry = jsonData.find((data) => data.id === id);
     if (existingEntry) {
