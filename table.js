@@ -1,15 +1,14 @@
 // table과 고급 편집 텍스트 관리 js 파일
 
-let jsonDataList = [];
-
-function editTable() {
+// 테이블 동적 생성 함수
+function editTable(updateData) {
     const tableBody = document.getElementById("tableBody");
-
-    const idValue = document.querySelector(".add-data__input-ID").value;
-    const scoreValue = document.querySelector(".add-data__input-VALUE").value;
-
-    addToJsonData(idValue, scoreValue);
-    updateChartData(jsonDataList);
+    const idValue = updateData
+        ? updateData.id
+        : document.querySelector(".add-data__input-ID").value;
+    const scoreValue = updateData
+        ? updateData.value
+        : document.querySelector(".add-data__input-VALUE").value;
     const row = document.createElement("tr");
 
     // 현재 행의 개수를 기반으로 배경색 설정
@@ -51,38 +50,34 @@ function editTable() {
     deleteBtn.addEventListener("click", function () {
         handleDeleteClick(row, idValue);
     });
-
-    document
-        .querySelector(".edit-data__apply-btn")
-        .addEventListener("click", function () {
-            editTableValues();
-            updateChartData(jsonDataList);
-        });
 }
 
 // 테이블 데이터 추가 함수
 function addToJsonData(id, value) {
+    const updatedDataList = [...globalState.getData()];
     let newEntry = {
         id: id,
         value: value,
     };
-    jsonDataList.push(newEntry);
+    updatedDataList.push(newEntry);
+    globalState.updateData(updatedDataList);
 }
 
 // 테이블 데이터 추가 시 고급 편집 엘리먼트 생성
 function renderAdvancedEditor() {
+    const updatedDataList = [...globalState.getData()];
     const advancedEditor = document.querySelector(".advanced-editor__bracket");
     const jsonDataBox = document.createElement("div"); // 데이터를 표시할 div 생성
     jsonDataBox.className = "advanced-editor__content";
 
-    jsonDataList.forEach((data) => {
-        const jsonData = document.createElement("p");
-        jsonData.className = "advanced-editor__text";
-        jsonData.innerHTML = `{
-            &nbsp;&nbsp;&nbsp;&nbsp;"id" : <span class="advanced-editor__editable-id">${data.id}</span>, 
+    updatedDataList.forEach((data) => {
+        const updatedDataList = document.createElement("p");
+        updatedDataList.className = "advanced-editor__text";
+        updatedDataList.innerHTML = `{
+            &nbsp;&nbsp;&nbsp;&nbsp;"id" : <span class="advanced-editor__editable-id">${data.id}</span>,
             &nbsp;&nbsp;&nbsp;&nbsp;"value": <span class="advanced-editor__editable-value">${data.value}</span>
         },`;
-        jsonDataBox.appendChild(jsonData);
+        jsonDataBox.appendChild(updatedDataList);
     });
 
     // 더블 클릭 시 span을 input으로 변환하는 함수
@@ -152,12 +147,11 @@ function renderAdvancedEditor() {
                 entriesToUpdate.push({ id, value });
             });
 
-            // entriesToUpdate 배열을 사용하여 jsonDataList를 업데이트합니다.
-            updateJsonDataList(entriesToUpdate);
-            updateHtmlTable();
-            updateChartData(jsonDataList); // 차트를 업데이트할 때 jsonDataList 전체를 전달
-
+            console.log(entriesToUpdate);
+            editTableValues(entriesToUpdate);
+            globalState.updateData(entriesToUpdate);
             // 수정하기 버튼 제거
+
             event.target.remove();
         }
     });
@@ -173,7 +167,6 @@ function renderAdvancedEditor() {
     advancedEditor.appendChild(jsonDataBox);
 }
 
-// 테이블 데이터 수정
 function editTableValues() {
     const tableBody = document.getElementById("tableBody");
     const rows = tableBody.querySelectorAll("tr");
@@ -187,72 +180,27 @@ function editTableValues() {
 
         // 업데이트할 항목 정보를 배열에 추가
         entriesToUpdate.push({ id, value });
+        console.log(id, value, "데이터 수정 시에 선택되는 아이디밸류");
     });
 
     // 변경된 항목들로 jsonDataList 업데이트
-    updateJsonDataList(entriesToUpdate);
+    globalState.updateData(entriesToUpdate);
 
     // 변경된 jsonData로 고급 편집기 업데이트
     renderAdvancedEditor();
 
-    // 수정된 값을 반환
     return entriesToUpdate;
 }
 
-// JSON Data 업데이트
-
-function updateJsonDataList(entries) {
-    // entries 배열에 있는 모든 항목을 처리합니다.
-    entries.forEach((entry) => {
-        const index = jsonDataList.findIndex((data) => data.id === entry.id);
-        if (index >= 0) {
-            // 기존 데이터 업데이트
-            jsonDataList[index].value = entry.value;
-        } else {
-            // 새 데이터 추가
-            jsonDataList.push(entry);
-        }
-    });
-}
-
 // 삭제 버튼 이벤트 리스너
-function handleDeleteClick(row, idValue, chartInstance) {
+function handleDeleteClick(row, idValue) {
+    const updatedDataList = [...globalState.getData()];
     tableBody.removeChild(row);
 
-    const updateData = jsonDataList.findIndex((data) => data.id === idValue);
+    const updateData = updatedDataList.findIndex((data) => data.id === idValue);
     if (updateData > -1) {
-        jsonDataList.splice(updateData, 1);
+        updatedDataList.splice(updateData, 1);
     }
-    updateChartData(jsonDataList);
+    globalState.updateData(updatedDataList);
     renderAdvancedEditor();
-}
-
-function updateChartData(data) {
-    // 차트 인스턴스를 업데이트
-    const chartInstance = chartFactory();
-    chartInstance.setChartData(data);
-}
-
-function updateHtmlTable() {
-    const tableBody = document.getElementById("tableBody");
-    const rows = tableBody.querySelectorAll("tr");
-
-    // jsonDataList의 각 요소에 대해 반복
-    jsonDataList.forEach((jsonData) => {
-        // ID가 일치하는 행을 찾습니다.
-        let rowToUpdate = Array.from(rows).find((row) => {
-            const idDiv = row.querySelector("td:nth-child(1) div");
-            return idDiv.textContent === jsonData.id;
-        });
-
-        // 일치하는 행이 있으면 업데이트
-        if (rowToUpdate) {
-            const valueInput = rowToUpdate.querySelector(
-                "td:nth-child(2) input",
-            );
-            if (valueInput.value !== jsonData.value) {
-                valueInput.value = jsonData.value;
-            }
-        }
-    });
 }
