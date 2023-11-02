@@ -17,45 +17,54 @@
             <div class="main__container">
                 <div class="graph">
                     <p class="graph__title">1.그래프</p>
-                    <svg class="graph__svg" width="400" height="400"></svg>
+                    <svg class="graph__svg" width="1280" height="400"></svg>
                 </div>
-                <div class="edit-data">
-                    <p class="edit-data__title">2.값 편집</p>
-                    <table class="edit-data__table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>점수</th>
-                                <th>상태</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            <!-- 데이터로부터 행을 채워 넣을 공간 -->
-                        </tbody>
-                    </table>
-                    <button class="edit-data__apply-btn">Apply</button>
-                </div>
-                <div class="add-data">
-                    <p class="add-data__title">3.값 추가</p>
-                    <div class="add-data__input">
-                        <input
-                            class="add-data__input-ID"
-                            type="text"
-                            placeholder="ID"
-                        />
-                        <input
-                            type="text"
-                            placeholder="VALUE"
-                            class="add-data__input-VALUE"
-                        />
-                        <button class="add-data__btn">Add</button>
+                <div style="display: flex; width: 100%">
+                    <div style="width: 50%">
+                        <div class="edit-data">
+                            <p class="edit-data__title">2.값 편집</p>
+                            <table class="edit-data__table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>VALUE</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody">
+                                    <!-- 데이터로부터 행을 채워 넣을 공간 -->
+                                </tbody>
+                            </table>
+                            <div class="edit-data__btnDiv">
+                                <button class="edit-data__apply-btn">
+                                    수정하기
+                                </button>
+                            </div>
+                        </div>
+                        <div class="add-data">
+                            <p class="add-data__title">3.값 추가</p>
+                            <div class="add-data__input">
+                                <input
+                                    class="add-data__input-ID"
+                                    type="text"
+                                    placeholder="ID"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="VALUE"
+                                    class="add-data__input-VALUE"
+                                />
+                                <button class="add-data__btn">추가하기</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="advanced-editor">
-                    <p class="advanced-editor__title">4.값 고급 편집</p>
-                    <div class="advanced-editor__container">
-                        <p class="advanced-editor__bracket">[</p>
-                        <p class="advanced-editor__bracket">]</p>
+
+                    <div class="advanced-editor">
+                        <p class="advanced-editor__title">4.값 고급 편집</p>
+                        <div class="advanced-editor__container">
+                            <p class="advanced-editor__bracket">[</p>
+                            <p class="advanced-editor__bracket">]</p>
+                        </div>
                     </div>
                 </div>
             </div>
