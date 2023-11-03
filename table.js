@@ -187,6 +187,7 @@ function renderAdvancedEditor() {
     advancedEditor.appendChild(tabelDataDiv);
 }
 
+// 고급 편집 수정 취소
 document.addEventListener("click", function (event) {
     if (event.target.classList.contains("advanced-editor__cancel-btn")) {
         // 모든 input 요소를 다시 span 요소로 변환합니다.

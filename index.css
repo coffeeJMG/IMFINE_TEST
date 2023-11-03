@@ -69,6 +69,25 @@ p.advanced-editor__text {
     font-size: small;
 }
 
+.advanced-editor__editable-value {
+    cursor: pointer;
+    position: relative; /* 상대적 위치 지정 */
+}
+
+.advanced-editor__editable-value:hover::after {
+    content: "더블클릭하여 편집";
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    white-space: nowrap;
+    background-color: #555;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: smaller;
+    z-index: 1000;
+}
+
 .advanced-editor__save-btn {
     position: absolute;
     bottom: 5px;
