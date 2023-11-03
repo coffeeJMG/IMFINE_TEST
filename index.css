@@ -1,8 +1,10 @@
+/* 전체 크기 설정*/
 .main__container {
     width: 1280px;
     margin: 0 auto;
 }
 
+/* 지원자 이름 부분 css */
 nav p {
     display: flex;
     justify-content: flex-end;
@@ -10,10 +12,12 @@ nav p {
     margin-right: 15%;
 }
 
+/* 차트 css */
 .graph__svg {
     background-color: #eee;
 }
 
+/* 테이블 css */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -38,6 +42,7 @@ th {
     background-color: #e6e6e6; /* 원하는 색상으로 변경 */
 }
 
+/* 버튼 css */
 .edit-data__btnDiv {
     display: flex;
     justify-content: flex-end;
@@ -47,6 +52,7 @@ th {
     margin-top: 1%;
 }
 
+/* 고급 편집 css */
 .advanced-editor__container {
     border: 1px solid #000;
     padding: 10px;
@@ -59,13 +65,13 @@ th {
 }
 
 .advanced-editor__text {
-    padding: 0 15px; /* 상하 5px, 좌우 15px 패딩 */
-    white-space: pre-line; /* 줄바꿈 및 공백 유지 */
+    padding: 0 15px;
+    white-space: pre-line;
 }
 
 p.advanced-editor__bracket,
 p.advanced-editor__text {
-    margin: 0; /* 상하 마진 제거 */
+    margin: 0;
     font-size: small;
 }
 
@@ -98,14 +104,14 @@ p.advanced-editor__text {
     bottom: 5px;
     right: 10px;
 }
-/* 모든 input 태그에 적용 */
+
+/* input css */
 input {
-    border: none; /* 기본 테두리 제거 */
-    border-bottom: 1px solid #000; /* 밑줄 테두리 추가 */
-    background-color: transparent; /* 배경색 제거 */
+    border: none;
+    border-bottom: 1px solid #000;
+    background-color: transparent;
 }
 
-/* input이 포커스를 받았을 때 */
 input:focus {
-    outline: none; /* 기본 포커스 테두리 제거 */
+    outline: none;
 }
