@@ -1,27 +1,29 @@
-// Subject 객체
+// 렌더링 시 기본 옵션 설정
+
+// 테이블 데이터 전역 상태관리를 위한 옵저버 패턴
 function DataState() {
     this.observers = [];
     this.data = [];
 }
 
 DataState.prototype = {
+    // 함수 구독
     subscribe: function (observer) {
         this.observers.push(observer);
     },
-    unsubscribe: function (observer) {
-        const index = this.observers.indexOf(observer);
-        if (index > -1) {
-            this.observers.splice(index, 1);
-        }
-    },
+
+    // 변화 감지
     notify: function () {
         this.observers.forEach((observer) => observer.update(this.data));
     },
+
+    // 데이터 업데이트
     updateData: function (newData) {
         this.data = newData;
         this.notify();
-        console.log(this.data);
     },
+
+    // 데이터 열람
     getData: function () {
         return this.data;
     },
@@ -36,40 +38,44 @@ function Observer() {
 
 // 구체적인 Observer 구현
 
+// 차트 옵저버
 function ChartObserver(chartInstance) {
     this.update = function (data) {
-        console.log(data, "차트 데이터 변화");
         chartInstance.setData(data); // 새로운 데이터로 차트 업데이트
     };
 }
+
+// 테이블 옵저버
 function TableObserver() {
     this.update = function (data) {
-        console.log(data, "테이블 데이터 변화");
-        // 기존 테이블 내용을 지우고
+        // 기존 테이블 내용을 삭제
         const tableBody = document.getElementById("tableBody");
         while (tableBody.firstChild) {
             tableBody.removeChild(tableBody.firstChild);
         }
-        // 새로운 데이터로 테이블을 다시 채운다
+
+        // 새로운 데이터 추가
         data.forEach((updatedData) => {
             editTable(updatedData);
         });
     };
 }
 
+// 고급 편집 옵저버
+
 function EditorObserver() {
-    this.update = function (data) {
-        console.log(data, "고급 편집 변화");
-    };
+    this.update = function (data) {};
 }
 
-// 전역 상태 인스턴스 생성
-const globalState = new DataState();
+// 전역 상태 관리 인스턴스
+const tabelDataState = new DataState();
 
-// 예를 들어 데이터가 변경되는 경우, 전역 상태 업데이트
+// 데이터가 변경되는 경우, 전역 상태 업데이트
 function handleDataChange(newData) {
-    globalState.updateData(newData);
+    tabelDataState.updateData(newData);
 }
+
+// 차트 실행
 function chartFactory() {
     const chart = new Chart(); // 'Chart' 생성자 함수 또는 클래스 필요
     chart.init(0, 100);
@@ -78,9 +84,9 @@ function chartFactory() {
     return chart;
 }
 
-// init 수정
+// 렌더링시에 기본 설정
 let init = function () {
-    // Chart 인스턴스 생성 및 Observer 등록은 이곳에서만 진행합니다.
+    // Chart 인스턴스 생성
     const chartInstance = chartFactory();
 
     // Observer 생성 및 구독 등록
@@ -88,22 +94,24 @@ let init = function () {
     const tableObserver = new TableObserver();
     const editorObserver = new EditorObserver();
 
-    globalState.subscribe(chartObserver);
-    globalState.subscribe(tableObserver);
-    globalState.subscribe(editorObserver);
+    tabelDataState.subscribe(chartObserver);
+    tabelDataState.subscribe(tableObserver);
+    tabelDataState.subscribe(editorObserver);
 
     // 이벤트 리스너 초기화
     initEventListeners();
 };
 
+// 버튼 별 이벤트 리스너 추가
 function initEventListeners() {
+    // 데이터 수정하기 버튼
     document
         .querySelector(".edit-data__apply-btn")
         .addEventListener("click", function () {
-            editTableValues(); // 테이블 값을 수정하는 로직
-            // 이곳에서 globalState를 업데이트하는 로직을 추가해야 할 수도 있습니다.
+            editTableValues(); // 테이블 값을 수정하는 함수
         });
 
+    // 데이터 추가하기 버튼
     document
         .querySelector(".add-data__input button")
         .addEventListener("click", function () {
@@ -112,7 +120,7 @@ function initEventListeners() {
                 ".add-data__input-VALUE",
             ).value;
             if (idValue && scoreValue) {
-                addToJsonData(idValue, scoreValue);
+                addTabelData(idValue, scoreValue);
             }
         });
 }

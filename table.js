@@ -2,16 +2,16 @@
 
 // 테이블 동적 생성 함수
 function editTable(updateData) {
-    const tableBody = document.getElementById("tableBody");
+    const tableBody = document.getElementById("tableBody"); // data 가 적용될 테이블
     const idValue = updateData
         ? updateData.id
-        : document.querySelector(".add-data__input-ID").value;
+        : document.querySelector(".add-data__input-ID").value; // 변경된 id 데이터 없다면 새로 입력된 id 데이터
     const scoreValue = updateData
         ? updateData.value
-        : document.querySelector(".add-data__input-VALUE").value;
-    const row = document.createElement("tr");
+        : document.querySelector(".add-data__input-VALUE").value; // 변경된 value 데이터 없다면 새로 입력된 value 데이터
+    const row = document.createElement("tr"); // 테이블 행 생성
 
-    // 현재 행의 개수를 기반으로 배경색 설정
+    // 짝수, 홀수 번 째 행 색상 다르게 지정
     if (tableBody.childNodes.length % 2 === 0) {
         row.style.backgroundColor = "#f2f2f2"; // 짝수 행의 배경색
     } else {
@@ -40,55 +40,62 @@ function editTable(updateData) {
 
     deleteCell.appendChild(deleteBtn);
 
+    // 행에 들어갈 요소 추가
     row.appendChild(idCell);
     row.appendChild(valueCell);
     row.appendChild(deleteCell);
 
+    // 테이블에 생성된 행 추가
     tableBody.appendChild(row);
 
+    // 고급 편집에 데이터 동시 생성
     renderAdvancedEditor();
+
+    // 삭제 버튼 이벤트 리스너 추가
     deleteBtn.addEventListener("click", function () {
+        // 데이터 삭제 함수
         handleDeleteClick(row, idValue);
     });
 }
 
 // 테이블 데이터 추가 함수
-function addToJsonData(id, value) {
-    const updatedDataList = [...globalState.getData()];
-    let newEntry = {
+function addTabelData(id, value) {
+    const tabelDataList = [...tabelDataState.getData()]; // 기존 데이터 열람
+    let newData = {
         id: id,
         value: value,
     };
-    updatedDataList.push(newEntry);
-    globalState.updateData(updatedDataList);
+    tabelDataList.push(newData); // 새로운 데이터 추가
+    tabelDataState.updateData(tabelDataList); // 기존 데이터 업데이트
 }
 
 // 테이블 데이터 추가 시 고급 편집 엘리먼트 생성
 function renderAdvancedEditor() {
-    const updatedDataList = [...globalState.getData()];
-    const advancedEditor = document.querySelector(".advanced-editor__bracket");
-    const jsonDataBox = document.createElement("div"); // 데이터를 표시할 div 생성
-    jsonDataBox.className = "advanced-editor__content";
+    const tabelDataList = [...tabelDataState.getData()]; // 기존 데이터 열람
+    const advancedEditor = document.querySelector(".advanced-editor__bracket"); // 데이터 추가될 요소 선택
+    const tabelDataDiv = document.createElement("div"); // 데이터를 표시할 div 생성
+    tabelDataDiv.className = "advanced-editor__content";
 
-    updatedDataList.forEach((data) => {
-        const updatedDataList = document.createElement("p");
-        updatedDataList.className = "advanced-editor__text";
-        updatedDataList.innerHTML = `{
+    // 데이터를 순회하며 엘리먼트 생성
+    tabelDataList.forEach((data) => {
+        const tabelDataList = document.createElement("p");
+        tabelDataList.className = "advanced-editor__text";
+        tabelDataList.innerHTML = `{
             &nbsp;&nbsp;&nbsp;&nbsp;"id" : <span class="advanced-editor__editable-id">${data.id}</span>,
             &nbsp;&nbsp;&nbsp;&nbsp;"value": <span class="advanced-editor__editable-value">${data.value}</span>
         },`;
-        jsonDataBox.appendChild(updatedDataList);
+        tabelDataDiv.appendChild(tabelDataList);
     });
 
     // 더블 클릭 시 span을 input으로 변환하는 함수
     function convertToInput(event, className) {
         if (event.target.classList.contains(className)) {
-            const span = event.target;
-            const currentValue = span.textContent;
+            const span = event.target; // 대상 text 선택
+            const currentValue = span.textContent; // text의 값 저장
 
-            const input = document.createElement("input");
-            input.value = currentValue;
-            span.replaceWith(input);
+            const input = document.createElement("input"); // 변화 될 Input 생성
+            input.value = currentValue; // 기존 데이터 값 저장
+            span.replaceWith(input); // Input으로 변경
             input.focus();
 
             // input 값이 변경되면 '수정하기' 버튼 표시
@@ -106,6 +113,7 @@ function renderAdvancedEditor() {
         }
     }
 
+    // 더블 클릭 시 span => input 변경하는 함수 실행
     document.addEventListener("dblclick", function (event) {
         convertToInput(event, "advanced-editor__editable-value");
     });
@@ -113,50 +121,49 @@ function renderAdvancedEditor() {
     // '수정하기' 버튼 클릭 시 값을 저장하고 input을 span으로 변환
     document.addEventListener("click", function (event) {
         if (event.target.classList.contains("advanced-editor__save-btn")) {
-            const entriesToUpdate = [];
+            const updateTabelDataList = [];
 
             // .advanced-editor__content 내의 모든 input 요소들을 찾습니다.
-            const paragraphs = document.querySelectorAll(
+            const tabelInputs = document.querySelectorAll(
                 ".advanced-editor__text",
             );
 
-            paragraphs.forEach((paragraph) => {
-                // ID와 value를 담고 있는 input 태그를 찾습니다.
-                const idSpan = paragraph.querySelector(
+            tabelInputs.forEach((input) => {
+                // ID를 담은 span과 Value 담고 있는 input 태그를 찾아서 선택
+                const idSpan = input.querySelector(
                     ".advanced-editor__editable-id",
                 );
-                const valueInput = paragraph.querySelector(
+                const valueInput = input.querySelector(
                     "input.advanced-editor__editable-value",
                 );
 
-                let id = idSpan.textContent;
-                let value;
+                let id = idSpan.textContent; // id 값은 변경하지 않으므로 기존 값 그대로 사용
+                let value; // 변경될 value를 담을 변수
 
                 // input 요소로 변환된 value 값이 있는지 확인
                 if (valueInput) {
                     value = valueInput.value;
                 } else {
                     // input 요소가 없다면 span에서 value 값을 가져옵니다.
-                    const valueSpan = paragraph.querySelector(
+                    const valueSpan = input.querySelector(
                         ".advanced-editor__editable-value",
                     );
                     value = valueSpan.textContent;
                 }
 
                 // 업데이트할 항목 정보를 추가합니다.
-                entriesToUpdate.push({ id, value });
+                updateTabelDataList.push({ id, value });
             });
 
-            console.log(entriesToUpdate);
-            editTableValues(entriesToUpdate);
-            globalState.updateData(entriesToUpdate);
-            // 수정하기 버튼 제거
+            editTableValues(updateTabelDataList);
+            tabelDataState.updateData(updateTabelDataList);
 
+            // 수정하기 버튼 제거
             event.target.remove();
         }
     });
 
-    // 기존에 추가된 jsonDataBox 삭제 (중복 방지)
+    // 기존에 추가된 advance Data 삭제 (중복 방지)
     const oldDisplay = advancedEditor.querySelector(
         ".advanced-editor__content",
     );
@@ -164,14 +171,17 @@ function renderAdvancedEditor() {
         advancedEditor.removeChild(oldDisplay);
     }
 
-    advancedEditor.appendChild(jsonDataBox);
+    advancedEditor.appendChild(tabelDataDiv);
 }
 
+// 테이블 데이터 변경 함수
 function editTableValues() {
+    // 새로운 데이터를 반영할 테이블 엘리먼트 생성
     const tableBody = document.getElementById("tableBody");
     const rows = tableBody.querySelectorAll("tr");
-    let entriesToUpdate = []; // 업데이트할 항목들을 저장할 배열
+    let updateTabelData = []; // 업데이트할 항목들을 저장할 배열
 
+    // 행을 순회하며 데이터 저장
     rows.forEach((row) => {
         const valueInput = row.querySelector("td:nth-child(2) input");
         const idDiv = row.querySelector("td:nth-child(1) div");
@@ -179,28 +189,30 @@ function editTableValues() {
         const value = valueInput.value;
 
         // 업데이트할 항목 정보를 배열에 추가
-        entriesToUpdate.push({ id, value });
-        console.log(id, value, "데이터 수정 시에 선택되는 아이디밸류");
+        updateTabelData.push({ id, value });
     });
 
     // 변경된 항목들로 jsonDataList 업데이트
-    globalState.updateData(entriesToUpdate);
+    tabelDataState.updateData(updateTabelData);
 
     // 변경된 jsonData로 고급 편집기 업데이트
     renderAdvancedEditor();
 
-    return entriesToUpdate;
+    return updateTabelData;
 }
 
 // 삭제 버튼 이벤트 리스너
 function handleDeleteClick(row, idValue) {
-    const updatedDataList = [...globalState.getData()];
-    tableBody.removeChild(row);
+    const tabelDataList = [...tabelDataState.getData()]; // 기존 데이터 열람
+    tableBody.removeChild(row); // 행 삭제
 
-    const updateData = updatedDataList.findIndex((data) => data.id === idValue);
-    if (updateData > -1) {
-        updatedDataList.splice(updateData, 1);
+    // 데이터 삭제
+    const deleteData = tabelDataList.findIndex((data) => data.id === idValue);
+    if (deleteData > -1) {
+        tabelDataList.splice(deleteData, 1);
     }
-    globalState.updateData(updatedDataList);
+
+    // 변경된 데이터 저장
+    tabelDataState.updateData(tabelDataList);
     renderAdvancedEditor();
 }

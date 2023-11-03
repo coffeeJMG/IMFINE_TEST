@@ -104,7 +104,7 @@ function Chart() {
         let chartAreaHeight = me.axisY * 8;
         let chartAreaTop = me.axisY;
         let chartAreaBottom = me.axisY * 9;
-        let chartAreaLeft = me.axisX;
+        let chartAreaX = me.axisX;
         let barWidthArea = chartAreaWidth / dataCount;
         let barWidth = (chartAreaWidth / dataCount) * 0.8; // 여백
         let barGapX = (chartAreaWidth / dataCount) * 0.1;
@@ -115,7 +115,8 @@ function Chart() {
                 (chartAreaHeight * Number(item.value - me.min)) /
                 (me.max - me.min);
             let barTop = chartAreaBottom - barHeight;
-            let barLeft = chartAreaLeft + barWidthArea * i + barGapX;
+            let barLeft = chartAreaX + barWidthArea * i + barGapX;
+            let barRight = chartAreaX + barWidthArea * i + barGapX;
             if (i != 0) {
                 barLeft += barGapX;
             }
@@ -127,6 +128,7 @@ function Chart() {
             );
             rect.setAttribute("xmlns", "http://www.w3.org/2000/svg");
             rect.setAttribute("x", barLeft);
+            rect.setAttribute("x", barRight);
             rect.setAttribute("y", barTop);
             rect.setAttribute("width", barWidth);
             rect.setAttribute("height", barHeight);
