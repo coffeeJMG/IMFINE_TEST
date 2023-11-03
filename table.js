@@ -95,20 +95,33 @@ function renderAdvancedEditor() {
 
             const input = document.createElement("input"); // 변화 될 Input 생성
             input.value = currentValue; // 기존 데이터 값 저장
+            input.setAttribute("data-original-value", currentValue);
             span.replaceWith(input); // Input으로 변경
             input.focus();
 
-            // input 값이 변경되면 '수정하기' 버튼 표시
-            input.addEventListener("input", function () {
-                if (!document.querySelector(".advanced-editor__save-btn")) {
-                    const saveBtn = document.createElement("button");
-                    saveBtn.textContent = "수정하기";
-                    saveBtn.className = "advanced-editor__save-btn";
-                    document
-                        .querySelector(".advanced-editor__content")
-                        .after(saveBtn);
-                }
-            });
+            // 여기서 '수정하기'와 '취소하기' 버튼을 생성합니다.
+            const buttonContainer = document.createElement("div");
+            buttonContainer.className = "advanced-editor__button-container";
+
+            // 수정하기 버튼
+            const saveBtn = document.createElement("button");
+            saveBtn.textContent = "수정하기";
+            saveBtn.className = "advanced-editor__save-btn";
+
+            // 취소하기 버튼
+            const cancelBtn = document.createElement("button");
+            cancelBtn.textContent = "취소하기";
+            cancelBtn.className = "advanced-editor__cancel-btn";
+
+            // 버튼들을 컨테이너에 추가
+            buttonContainer.appendChild(saveBtn);
+            buttonContainer.appendChild(cancelBtn);
+
+            // 컨테이너를 화면에 표시
+            document
+                .querySelector(".advanced-editor__content")
+                .after(buttonContainer);
+
             input.className = className;
         }
     }
@@ -158,8 +171,8 @@ function renderAdvancedEditor() {
             editTableValues(updateTabelDataList);
             tabelDataState.updateData(updateTabelDataList);
 
-            // 수정하기 버튼 제거
-            event.target.remove();
+            //버튼 삭제
+            removeButtons();
         }
     });
 
@@ -172,6 +185,36 @@ function renderAdvancedEditor() {
     }
 
     advancedEditor.appendChild(tabelDataDiv);
+}
+
+document.addEventListener("click", function (event) {
+    if (event.target.classList.contains("advanced-editor__cancel-btn")) {
+        // 모든 input 요소를 다시 span 요소로 변환합니다.
+        const inputs = document.querySelectorAll(
+            "input.advanced-editor__editable-value",
+        );
+        inputs.forEach((input) => {
+            // data-original-value를 사용하여 원본 데이터를 span에 설정
+            const originalValue = input.getAttribute("data-original-value");
+            const span = document.createElement("span");
+            span.textContent = originalValue;
+            span.className = "advanced-editor__editable-value";
+            input.replaceWith(span);
+        });
+
+        //버튼 삭제
+        removeButtons();
+    }
+});
+
+// 수정하기,취소하기 버튼 없애는 함수
+function removeButtons() {
+    const buttonContainers = document.querySelectorAll(
+        ".advanced-editor__button-container",
+    );
+    buttonContainers.forEach((container) => {
+        container.remove();
+    });
 }
 
 // 테이블 데이터 변경 함수

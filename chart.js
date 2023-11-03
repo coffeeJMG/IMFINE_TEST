@@ -112,10 +112,10 @@ function Chart() {
         // 데이터 개수에 따라 데이터 폭 조정
         if (dataCount === 1) {
             barWidth = (chartAreaWidth / dataCount) * 0.3; // 4개 이하일 경우 폭을 100px로 설정
-            barGapX = (chartAreaWidth / dataCount) * 0.4;
+            barGapX = (chartAreaWidth / dataCount) * 0.35;
         } else if (dataCount <= 4) {
             barWidth = (chartAreaWidth / dataCount) * 0.6; // 4개 이하일 경우 폭을 100px로 설정
-            barGapX = (chartAreaWidth / dataCount) * 0.3;
+            barGapX = (chartAreaWidth / dataCount) * 0.2;
         } else {
             barWidth = (chartAreaWidth / dataCount) * 0.8; // 여백을 고려한 폭 설정
             barGapX = (chartAreaWidth / dataCount) * 0.1;
