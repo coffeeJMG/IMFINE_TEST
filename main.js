@@ -54,10 +54,21 @@ function TableObserver() {
             tableBody.removeChild(tableBody.firstChild);
         }
 
+        let overdata = false;
         // 새로운 데이터 추가
         data.forEach((updatedData) => {
+            if (updatedData.value > 100) {
+                // 여기서 알림 로직을 구현할 수 있습니다.
+                overdata = true;
+            }
             editTable(updatedData);
         });
+
+        if (overdata) {
+            alert(
+                "값이 100을 초과하는 데이터가 있습니다. 그래프는 최대 100까지만 표시됩니다.",
+            );
+        }
     };
 }
 
@@ -102,7 +113,7 @@ let init = function () {
     initEventListeners();
 };
 
-// 버튼 별 이벤트 리스너 추가
+// 함수가 재실행이 빈번하여 초기 로드시에만 이벤트 리스너 할당
 function initEventListeners() {
     // 데이터 수정하기 버튼
     document
