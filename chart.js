@@ -106,29 +106,41 @@ function Chart() {
         let chartAreaBottom = me.axisY * 9;
         let chartAreaX = me.axisX;
         let barWidthArea = chartAreaWidth / dataCount;
-        let barWidth = (chartAreaWidth / dataCount) * 0.8; // 여백
-        let barGapX = (chartAreaWidth / dataCount) * 0.1;
+        let barWidth;
+        let barGapX;
 
+        // 데이터 개수에 따라 데이터 폭 조정
+        if (dataCount === 1) {
+            barWidth = (chartAreaWidth / dataCount) * 0.3; // 4개 이하일 경우 폭을 100px로 설정
+            barGapX = (chartAreaWidth / dataCount) * 0.4;
+        } else if (dataCount <= 4) {
+            barWidth = (chartAreaWidth / dataCount) * 0.6; // 4개 이하일 경우 폭을 100px로 설정
+            barGapX = (chartAreaWidth / dataCount) * 0.3;
+        } else {
+            barWidth = (chartAreaWidth / dataCount) * 0.8; // 여백을 고려한 폭 설정
+            barGapX = (chartAreaWidth / dataCount) * 0.1;
+        }
+
+        // 데이터의 최대 값을 100으로 제한하는 로직
+        let maxDataValue = 100; // 데이터 최대 값을 100으로 설정
         for (let i = 0; i < dataCount; i++) {
             let item = data[i];
+            // 데이터 값이 100을 초과하면 100으로 설정
+            let value = Math.min(Number(item.value), maxDataValue);
+
             let barHeight =
-                (chartAreaHeight * Number(item.value - me.min)) /
-                (me.max - me.min);
+                (chartAreaHeight * (value - me.min)) / (maxDataValue - me.min);
             let barTop = chartAreaBottom - barHeight;
             let barLeft = chartAreaX + barWidthArea * i + barGapX;
-            let barRight = chartAreaX + barWidthArea * i + barGapX;
-            if (i != 0) {
-                barLeft += barGapX;
-            }
+
             let fill = "black";
             let textPosX = barLeft + barWidth / 2;
             let rect = document.createElementNS(
                 "http://www.w3.org/2000/svg",
                 "rect",
             );
-            rect.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+            // 중복된 x 속성 제거
             rect.setAttribute("x", barLeft);
-            rect.setAttribute("x", barRight);
             rect.setAttribute("y", barTop);
             rect.setAttribute("width", barWidth);
             rect.setAttribute("height", barHeight);
@@ -142,7 +154,6 @@ function Chart() {
                 "http://www.w3.org/2000/svg",
                 "text",
             );
-            textX.setAttribute("xmlns", "http://www.w3.org/2000/svg");
             textX.setAttribute("x", textPosX);
             textX.setAttribute("y", chartAreaBottom + 5);
             textX.innerHTML = item.id;
